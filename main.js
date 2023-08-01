@@ -3,8 +3,8 @@ const productsData = [
     { id: 2, title: "House", image: "house.jpeg", desc: "This is some description of product", price: 139000.00 },
     { id: 3, title: "Car", image: "car.jpg", desc: "This is some description of product", price: 21999.90 },
     { id: 4, title: "Book (LoTR)", image: "book.jpg", desc: "This is some description of product", price: 59.90 },
-    { id: 5, title: "Flower Title 5", image: "house.jpeg", desc: "This is some description of product", price: 139.90 },
-    { id: 6, title: "Flower Title 6", image: "car.jpg", desc: "This is some description of product", price: 139.90 },
+    { id: 5, title: "Toy Car", image: "toy-car.jpg", desc: "This is some description of product", price: 99.90 },
+    { id: 6, title: "Toy House", image: "house.jpeg", desc: "This is some description of product", price: 139.90 },
     { id: 7, title: "Flower Title 7", image: "flower.jpg", desc: "This is some description of product", price: 139.90 },
     { id: 8, title: "Flower Title 8", image: "house.jpeg", desc: "This is some description of product", price: 139.90 },
     { id: 9, title: "Flower Title 9", image: "car.jpg", desc: "This is some description of product", price: 139.90 },
@@ -39,7 +39,7 @@ function allCards() {
 
 allCards()
 
-const cartData = [];
+let cartData = [];
 
 function updateCart() {
     cartItems.innerHTML = '';
@@ -50,8 +50,18 @@ function updateCart() {
         const li = document.createElement('li');
         li.innerHTML = `
             <img src="./images/${item.image}" alt="${item.title}">
-            <span>${item.title} (${item.count}x)</span>
-            <span>$${item.price}</span>
+            <div class="flex">
+                <span>${item.title}</span>
+                <div class="text2">
+                    <div class="count">
+                        <button class="minus" id=${item.id}>-</button>
+                        <span>${item.count}</span>
+                        <button class="plus" id=${item.id}>+</button>
+                    </div>
+                    <span>$${(item.price * item.count).toFixed(2)}</span>
+                    <button class="remove" id=${item.id}>x</button>
+                </div>
+            </div>
         `;
         cartItems.appendChild(li);
     });
@@ -85,6 +95,30 @@ document.addEventListener('click', (event) => {
         if (selectedProduct) {
             addToCart(selectedProduct);
         }
+    }
+    else if (event.target.classList.contains('plus')) {
+        const productId = event.target.id;
+        const cartItem = cartData.find(item => item.id == productId);
+        if (cartItem) {
+            cartItem.count++;
+            updateCart();
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+        }
+    }
+    else if (event.target.classList.contains('minus')) {
+        const productId = event.target.id;
+        const cartItem = cartData.find(item => item.id == productId);
+        if (cartItem && cartItem.count > 1) {
+            cartItem.count--;
+            updateCart();
+            localStorage.setItem('cartData', JSON.stringify(cartData));
+        }
+    }
+    else if (event.target.classList.contains('remove')) {
+        const productId = event.target.id;
+        cartData = cartData.filter(item => item.id != productId);
+        updateCart();
+        localStorage.setItem('cartData', JSON.stringify(cartData));
     }
 });
 
